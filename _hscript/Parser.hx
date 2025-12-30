@@ -19,8 +19,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-package hscript;
-import hscript.Expr;
+package _hscript;
+import _hscript.Expr;
 
 enum Token {
 	TEof;
@@ -60,10 +60,10 @@ class Parser {
 	/**
 		allows to check for #if / #else in code
 	**/
-	public var preprocessorValues : Map<String,Dynamic> = new Map();
+	public var preprocesorValues : Map<String,Dynamic> = new Map();
 
 	/**
-		activate JSON compatibility
+		activate JSON compatiblity
 	**/
 	public var allowJSON : Bool;
 
@@ -183,7 +183,7 @@ class Parser {
 			idents[identChars.charCodeAt(i)] = true;
 	}
 
-	public function parseString( s : String, ?origin : String = "hscript" ) {
+	public function parseString( s : String, ?origin : String = "_hscript" ) {
 		initParser(origin);
 		if(s == "") s = "0;"; // fixing crash with empty file
 		input = s;
@@ -1333,7 +1333,7 @@ class Parser {
 
 	// ------------------------ module -------------------------------
 
-	public function parseModule( content : String, ?origin : String = "hscript" ) {
+	public function parseModule( content : String, ?origin : String = "_hscript" ) {
 		initParser(origin);
 		input = content;
 		readPos = 0;
@@ -2003,14 +2003,9 @@ class Parser {
 		var pos = readPos;
 		while( true ) {
 			var tk = token();
-			
-			if( tk == TEof ) {
-				if (preprocStack.length != 0) {
-					error(EInvalidPreprocessor("Unclosed"), pos, pos);
-				} else {
-					break;
-				}
-			}
+			// TODO: Fix ending in with #end in the file
+			if( tk == TEof )
+				error(EInvalidPreprocessor("Unclosed"), pos, pos);
 			if( preprocStack[spos] != obj ) {
 				push(tk);
 				break;
@@ -2094,7 +2089,4 @@ class Parser {
 		}
 	}
 
-	@:noCompletion public var preprocesorValues(get,set) : Map<String,Dynamic>;
-	inline function get_preprocesorValues() return this.preprocessorValues;
-	inline function set_preprocesorValues(v) return this.preprocessorValues = v;
 }
